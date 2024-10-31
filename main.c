@@ -35,16 +35,11 @@ int main() {
     }
     printf("\n");
 
-    test = remove_possibility(test, NB_possibilities-1, 2);
-
-    /*for (int j = 0; j < NB_possibilities-1; j++)
-    {
-        printf("%s   ", getMoveAsString(ln[j]));
-    }
-    printf("\n");*/
-    t_localisation loc = loc_init(6, 3, NORTH);
+    t_localisation loc = loc_init(2, 6, NORTH);
 
     t_node* node = NULL;
-    node = create_all_Node(node, NB_possibilities, NB_choices, test, loc,  map);
+    node = create_all_Node(NB_possibilities, 0, test, loc, map);
+
+    printf("Min = %d", search_min(node));
     return 0;
 }
