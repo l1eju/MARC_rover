@@ -18,6 +18,7 @@
 typedef struct s_node
 {
     int value;
+    int depth;
     t_soil soil_type;
     struct s_node **sons;
     int nbSons; // taille physique du tableau
@@ -29,8 +30,10 @@ t_move* random_possibilities();
 
 t_move* remove_possibility(t_move* possibilities, int len, int idx);
 
-t_node *createNode(int, t_localisation, t_map);
+t_node *createNode(int nb_sons, int depth, t_localisation loc, t_map map);
 
-t_node *create_all_Node(t_node*, int, int, t_move*, t_localisation, t_map);
+t_node *create_all_Node(int nb_possibilities, int depth, t_move* possibilities, t_localisation robot, t_map map);
+
+int search_min(t_node *node);
 
 #endif //UNTITLED1_TREE_H
