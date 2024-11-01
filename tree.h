@@ -14,6 +14,7 @@
 
 #define NB_possibilities 5
 #define NB_choices 3
+#define MAX_depth 100
 
 typedef struct s_node
 {
@@ -21,19 +22,20 @@ typedef struct s_node
     int depth;
     t_soil soil_type;
     struct s_node **sons;
-    int nbSons; // taille physique du tableau
+    int nbSons; // Taille physique du tableau
 } t_node;
-
 
 
 t_move* random_possibilities();
 
-t_move* remove_possibility(t_move* possibilities, int len, int idx);
+t_move* remove_possibility(t_move*, int, int);
 
-t_node *createNode(int nb_sons, int depth, t_localisation loc, t_map map);
+t_node *createNode(int, int, t_localisation, t_map);
 
-t_node *create_all_Node(int nb_possibilities, int depth, t_move* possibilities, t_localisation robot, t_map map);
+t_node *create_all_Node(int, int, t_move*, t_localisation, t_map);
 
-int search_min(t_node *node);
+int search_min(t_node *);
+
+int path_min(t_node *,int *, int *);
 
 #endif //UNTITLED1_TREE_H

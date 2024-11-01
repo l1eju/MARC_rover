@@ -23,6 +23,7 @@ int main() {
         }
         printf("\n");
     }
+
     displayMap(map);
 
 
@@ -40,6 +41,19 @@ int main() {
     t_node* node = NULL;
     node = create_all_Node(NB_possibilities, 0, test, loc, map);
 
-    printf("Min = %d", search_min(node));
+    //printf("Min = %d\n", search_min(node));
+
+    int path[MAX_depth];
+    int path_length = 0;
+    int min_val = path_min(node,path,&path_length);
+    printf("Min = %d\n", min_val);
+    for (int i = 0; i < path_length; i++){
+        printf("%d ",path[i]);
+        if (i != path_length - 1) {
+            printf("-> ");
+        }
+    }
+    free(node);
+    free(test);
     return 0;
 }
