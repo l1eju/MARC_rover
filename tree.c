@@ -125,8 +125,8 @@ int path_min(t_node *node, int *path, int *path_length) {               //Foncti
                 for (int j = 0; j < temp_length; j++){                                              //Boucle pour avoir le chemin finale partant de la racine jusqu'à la feuille minimale
                     path[j+1] = temp_path[j];
                 }
+                *path_length = temp_length + 1;                                                         //Mise à jour de la longueur totale du chemin
             }
-            *path_length = temp_length + 1;                                                         //Mise à jour de la longueur totale du chemin
             free(temp_path);                                                                //Libère la mémoire car on ne l'utilise plus
         }
     }
