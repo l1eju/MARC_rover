@@ -46,7 +46,7 @@ int main() {
     int path[MAX_depth];
     int path_length = 0;
     int min_val = path_min(node,path,&path_length);
-    printf("Min = %d\n", min_val);
+    printf("Feuille de valeur minimale = %d\n", min_val);
     for (int i = 0; i < path_length; i++){
         printf("%d ",path[i]);
         if (i != path_length - 1) {
