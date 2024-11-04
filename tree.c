@@ -9,7 +9,7 @@ t_move* random_possibilities(){
     t_move* possibilities = (t_move*) malloc(NB_possibilities*sizeof(t_move));   //Initialise le tableau de mouvement tiré au hasard
 
     for(int i = 0; i < NB_possibilities; i++){
-        switch (1 + rand() % (NB_choices)) {    //On prend le mouvement associé au chiffre tiré et on le met dans le tableau de mouvement
+        switch (1 + rand() % 7) {    //On prend le mouvement associé au chiffre tiré et on le met dans le tableau de mouvement
             case 1:
                 possibilities[i] = F_10;
                 break;
