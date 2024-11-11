@@ -116,7 +116,7 @@ int path_min(t_node *node, int *path, int *path_length) {               //Foncti
     for (int i = 0; i < node->nbSons; i++) {                                                       //Boucle pour parcourir chaque fils
         if (node->sons[i] != NULL) {                                                               //Si le noeud du fils existe
             int temp_length = 0;                                                                   //Initialisation d'une variable temporaire de la longueur du chemin du fils
-            int *temp_path = (int *)malloc(MAX_depth *sizeof(int));                           //Tableau dynamique qui stocke temporairement le chemin
+            int *temp_path = (int *)malloc(node->depth *sizeof(int));                          //Tableau dynamique qui stocke temporairement le chemin
             int min_son = path_min(node->sons[i],temp_path ,&temp_length);    //Appel récursif pour stocker le chemin et la longueur temporaire du fils
 
             if (min_son < min) {                                                                    //Condition pour savoir si le minimum du fils est inférieur au minimum actuel

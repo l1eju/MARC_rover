@@ -14,7 +14,6 @@
 
 #define NB_possibilities 5
 #define NB_choices 3
-#define MAX_depth 100
 
 typedef struct s_node
 {

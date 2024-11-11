@@ -43,7 +43,7 @@ int main() {
 
     //printf("Min = %d\n", search_min(node));
 
-    int path[MAX_depth];
+    int path[node->depth];
     int path_length = 0;
     int min_val = path_min(node,path,&path_length);
     printf("Feuille de valeur minimale = %d\n", min_val);
