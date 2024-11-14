@@ -1,50 +1,45 @@
-//
-// Created by wengj on 22/10/2024.
-//
-
 #include "tree.h"
+#include <stdlib.h>
+#include <time.h>
+#include "map.h"
+#include "moves.h"
 
-t_move* random_possibilities(){
-    srand(time(NULL));  //Set la fonction rand
-    t_move* possibilities = (t_move*) malloc(NB_possibilities*sizeof(t_move));   //Initialise le tableau de mouvement tiré au hasard
+// Fonction pour générer des mouvements possibles aléatoires
+t_move* random_possibilities() {
+    srand(time(NULL));
+    t_move* possibilities = (t_move*) malloc(NB_possibilities * sizeof(t_move));  // Allocation mémoire pour les mouvements possibles
 
-    for(int i = 0; i < NB_possibilities; i++){
-        switch (1 + rand() % 7) {    //On prend le mouvement associé au chiffre tiré et on le met dans le tableau de mouvement
-            case 1:
-                possibilities[i] = F_10;
-                break;
-            case 2:
-                possibilities[i] = F_20;
-                break;
-            case 3:
-                possibilities[i] = F_30;
-                break;
-            case 4:
-                possibilities[i] = B_10;
-                break;
-            case 5:
-                possibilities[i] = T_LEFT;
-                break;
-            case 6:
-                possibilities[i] = T_RIGHT;
-                break;
-            case 7:
-                possibilities[i] = U_TURN;
-                break;
+    // Génère aléatoirement un mouvement parmi les 7 possibles
+    for (int i = 0; i < NB_possibilities; i++) {
+        switch (1 + rand() % 7) {  // Génère un nombre entre 1 et 7 pour choisir un mouvement
+            case 1: possibilities[i] = F_10; break;  // Mouvement de 10 unités en avant
+            case 2: possibilities[i] = F_20; break;  // Mouvement de 20 unités en avant
+            case 3: possibilities[i] = F_30; break;  // Mouvement de 30 unités en avant
+            case 4: possibilities[i] = B_10; break;  // Mouvement de 10 unités en arrière
+            case 5: possibilities[i] = T_LEFT; break;  // Rotation à gauche
+            case 6: possibilities[i] = T_RIGHT; break;  // Rotation à droite
+            case 7: possibilities[i] = U_TURN; break;  // Rotation à 180 degrés
         }
     }
-    return possibilities;   //A modifier pour 9 possibilités car certains mouvements sont limités à 7
+    return possibilities;
 }
 
-t_move* remove_possibility(t_move* possibilities, int len, int idx){
-    t_move* new_possibilities = (t_move*) malloc((len-1)*sizeof(t_move));
-    int j = 0;
-    for (int i = 0; i < len-1; i++){
-        if (i == idx) j++;
-        new_possibilities[i] = possibilities[j];
-        j++;
+// Fonction pour supprimer un mouvement spécifique de la liste des possibilités
+t_move* remove_possibility(t_move* possibilities, int len, int idx) {
+    // Vérification de la validité de l'index
+    if (idx < 0 || idx >= len) {
+        return NULL;  // Retourne NULL si l'index est invalide
     }
-    return new_possibilities;
+
+    t_move* new_possibilities = (t_move*) malloc((len - 1) * sizeof(t_move));  // Nouvelle liste avec une case en moins
+    int j = 0;
+
+    // Parcourt toutes les possibilités et copie celles qui ne sont pas supprimées
+    for (int i = 0; i < len; i++) {
+        if (i == idx) continue;  // Sauter l'élément à l'index idx
+        new_possibilities[j++] = possibilities[i];  // Copie le mouvement
+    }
+    return new_possibilities;  // Retourne la nouvelle liste sans le mouvement supprimé
 }
 
 t_node *createNode(int nb_sons, int depth, t_move mouvement, t_localisation loc, t_map map){
@@ -58,10 +53,13 @@ t_node *createNode(int nb_sons, int depth, t_move mouvement, t_localisation loc,
     new_node->sons = (t_node **)malloc(nb_sons*sizeof(t_node *));
     for (int i = 0; i < nb_sons; i++)
     {
+
         new_node->sons[i] = NULL;
     }
+
     return new_node;
 }
+
 
 t_node *create_all_Node(int nb_poss, int depth, t_move mouvement, t_move* possibilities, t_localisation robot, t_map map){   //La fonction ne prends pas en compte si on avance de plus de 10 mètres ou si on a déjà marché sur une crevasse
     if (depth > NB_choices) return NULL;                                                                            //Si la profondeur est supérieur au nombre de choix, on retourne NULL
@@ -80,30 +78,34 @@ t_node *create_all_Node(int nb_poss, int depth, t_move mouvement, t_move* possib
             t_move* new_possibilities = remove_possibility(possibilities, nb_poss, i);             //On crée le nouveau tableau de possibilités en retirant la case du noeud qu'on va créer car on l'aura déjà utilisé et on a déjà stocker la position après le mouvement pour connaître le coût
             node->sons[i] = create_all_Node(nb_poss - 1, depth+1, possibilities[i], new_possibilities, new_loc, map); //On utilise la récursivité pour obtenir l'enfant avec les nouveaux paramètres
             free(new_possibilities);                                                                        //On libère la mémoire de new_possibilities
+
         }
-        else{                                                                                                        //Si la position après le mouvement est valide, on ne crée pas d'enfant à la case concernée
-            node->sons[i] = NULL;
+        else {
+            node->sons[i] = NULL;  // Si la localisation est invalide, pas d'enfant à cet index
         }
     }
+
     return node;
 }
 
+// Fonction pour rechercher la valeur minimale parmi les nœuds d'un arbre
+int search_min(t_node* node) {
+    int min = node->value;  // La valeur minimale commence par celle du nœud actuel
 
-int search_min(t_node *node){  //Fonction pour chercher une feuille de valeur minimum
-    int min = node->value;
-
-    if (node->nbSons!=0){
+    // Si le nœud a des fils, on cherche la valeur minimale parmi eux
+    if (node->nbSons != 0) {
         for (int i = 0; i < node->nbSons; i++) {
-            if (node->sons[i]!=NULL){
-                int min_son = search_min(node->sons[i]);
-                if (min_son < min){
-                    min = min_son;
+            if (node->sons[i] != NULL) {
+                int min_son = search_min(node->sons[i]);  // Recherche récursive dans les sous-arbres
+                if (min_son < min) {
+                    min = min_son;  // Mise à jour de la valeur minimale
                 }
             }
         }
     }
     return min;
 }
+
 
 int nb_min(t_node *node, int min){  //Fonction pour chercher une feuille de valeur minimum
     int nb = 0;
@@ -135,10 +137,12 @@ int nb_min(t_node *node, int min){  //Fonction pour chercher une feuille de vale
                 path[0] = node->value;                                                              //Ajoute la valeur du noeud actuel
                 for (int j = 0; j < temp_length; j++){                                              //Boucle pour avoir le chemin finale partant de la racine jusqu'à la feuille minimale
                     path[j+1] = temp_path[j];
+
                 }
-                *path_length = temp_length + 1;                                                         //Mise à jour de la longueur totale du chemin
+                *path_length = temp_length + 1;  // Met à jour la longueur du chemin
             }
-            free(temp_path);                                                                //Libère la mémoire car on ne l'utilise plus
+
+            free(temp_path);  // Libère la mémoire allouée pour le chemin temporaire
         }
     }
     return min;
