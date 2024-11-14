@@ -42,40 +42,43 @@ t_move* remove_possibility(t_move* possibilities, int len, int idx) {
     return new_possibilities;  // Retourne la nouvelle liste sans le mouvement supprimé
 }
 
-// Fonction pour créer un nœud avec les informations de localisation et de carte
-t_node* createNode(int nb_sons, int depth, t_localisation loc, t_map map) {
-    t_node* new_node = (t_node*)malloc(sizeof(t_node));  // Allocation mémoire pour un nœud
-    new_node->value = map.costs[loc.pos.y][loc.pos.x];   // Coût de la case actuelle
-    new_node->depth = depth;  // Profondeur du nœud dans l'arbre
-    new_node->soil_type = map.soils[loc.pos.y][loc.pos.x];  // Type de sol à cette position
-    new_node->nbSons = nb_sons;  // Nombre d'enfants du nœud
-    new_node->sons = (t_node**)malloc(nb_sons * sizeof(t_node*));  // Allocation mémoire pour les enfants
-    for (int i = 0; i < nb_sons; i++) {
+t_node *createNode(int nb_sons, int depth, t_move mouvement, t_localisation loc, t_map map){
+    t_node *new_node;                                           //Initialise le nouvel arbre
+    new_node = (t_node *)malloc(sizeof(t_node));
+    new_node->value = map.costs[loc.pos.y][loc.pos.x];          //Définit le coût de la case
+    new_node->depth = depth;                                    //Définit la profondeur du noeud
+    new_node->mouvement = mouvement;
+    new_node->soil_type = map.soils[loc.pos.y][loc.pos.x];      //Définit le type de sol de la case
+    new_node->nbSons = nb_sons;                                 //Définit son nombre d'enfants
+    new_node->sons = (t_node **)malloc(nb_sons*sizeof(t_node *));
+    for (int i = 0; i < nb_sons; i++)
+    {
+
         new_node->sons[i] = NULL;
     }
 
     return new_node;
 }
 
-// Fonction récursive pour créer l'arbre des nœuds à partir des mouvements possibles
-t_node* create_all_Node(int nb_possibilities, int depth, t_move* possibilities, t_localisation robot, t_map map) {
-    if (depth > NB_choices) return NULL;  // Condition d'arrêt : si la profondeur dépasse le nombre maximum de choix
 
-    if (depth == NB_choices || map.costs[robot.pos.y][robot.pos.x] >= 10000)
-        nb_possibilities = 0;  // Si on a atteint la profondeur ou une case invalide, plus de mouvements possibles
+t_node *create_all_Node(int nb_poss, int depth, t_move mouvement, t_move* possibilities, t_localisation robot, t_map map){   //La fonction ne prends pas en compte si on avance de plus de 10 mètres ou si on a déjà marché sur une crevasse
+    if (depth > NB_choices) return NULL;                                                                            //Si la profondeur est supérieur au nombre de choix, on retourne NULL
 
-    t_node* node = createNode(nb_possibilities, depth, robot, map);  // Création d'un nœud avec les paramètres donnés
+    else if (depth == NB_choices || map.costs[robot.pos.y][robot.pos.x] >= 10000) nb_poss = 0;             //Si on est à la profondeur la plus bas, donc le dernier choix, ou que la case après le mouvement est une crevasse, le noeud n'aura pas d'enfant
 
-    // Parcours de tous les mouvements possibles
-    for (int i = 0; i < nb_possibilities; i++) {
-        t_localisation new_loc = robot;  // Copie de la localisation actuelle
-        updateLocalisation(&new_loc, possibilities[i]);  // Mise à jour de la localisation en fonction du mouvement
+    t_node* node = createNode(nb_poss, depth, mouvement, robot, map);                                     //Initialise le nouveau noeud
 
-        // Si la nouvelle localisation est valide, on crée un enfant dans l'arbre
-        if (isValidLocalisation(new_loc.pos, map.x_max, map.y_max)) {
-            t_move* new_possibilities = remove_possibility(possibilities, nb_possibilities, i);  // Suppression du mouvement utilisé
-            node->sons[i] = create_all_Node(nb_possibilities - 1, depth + 1, new_possibilities, new_loc, map);  // Appel récursif pour les enfants
-            free(new_possibilities);  // Libère la mémoire allouée pour la nouvelle liste de possibilités
+    for (int i = 0; i < nb_poss; i++) {
+
+        t_localisation new_loc = robot;
+        updateLocalisation(&new_loc, possibilities[i]);                                                             //On stocke la nouvelle position du robot selon le mouvement associé dans new_loc
+
+        if (isValidLocalisation(new_loc.pos, map.x_max, map.y_max)) {                                               //Si la position après le mouvement est valide, on crée les enfants
+
+            t_move* new_possibilities = remove_possibility(possibilities, nb_poss, i);             //On crée le nouveau tableau de possibilités en retirant la case du noeud qu'on va créer car on l'aura déjà utilisé et on a déjà stocker la position après le mouvement pour connaître le coût
+            node->sons[i] = create_all_Node(nb_poss - 1, depth+1, possibilities[i], new_possibilities, new_loc, map); //On utilise la récursivité pour obtenir l'enfant avec les nouveaux paramètres
+            free(new_possibilities);                                                                        //On libère la mémoire de new_possibilities
+
         }
         else {
             node->sons[i] = NULL;  // Si la localisation est invalide, pas d'enfant à cet index
@@ -103,29 +106,38 @@ int search_min(t_node* node) {
     return min;
 }
 
-// Fonction pour trouver le chemin menant à la valeur minimale dans l'arbre
-int path_min(t_node* node, int* path, int* path_length) {
-    if (node->nbSons == 0) {  // Si le nœud est une feuille (pas d'enfants)
-        path[0] = node->value;  // Ajoute la valeur du nœud au chemin
-        (*path_length)++;  // Incrémente la longueur du chemin
-        return node->value;  // Retourne la valeur de la feuille
+
+int nb_min(t_node *node, int min){  //Fonction pour chercher une feuille de valeur minimum
+    int nb = 0;
+
+    if (node->nbSons!=0){
+        for (int i = 0; i < node->nbSons; i++) {
+            if (node->sons[i]!=NULL){
+                nb += nb_min(node->sons[i], min);
+            }
+        }
     }
+    if (node->value == min) nb += 1;
+    return nb;
+}
 
-    int min = node->value;  // Initialisation de la valeur minimale avec celle du nœud actuel
+/*int* path_min_v1(t_node *node, int *path, int *path_length) {               //Fonction qui permet de chercher la valeur minimum et le chemin depuis la racine vers cette feuille
 
-    // Recherche dans tous les fils
-    for (int i = 0; i < node->nbSons; i++) {
-        if (node->sons[i] != NULL) {
-            int temp_length = 0;  // Variable pour la longueur du chemin temporaire
-            int* temp_path = (int*)malloc(node->depth * sizeof(int));  // Tableau pour stocker le chemin temporaire
-            int min_son = path_min(node->sons[i], temp_path, &temp_length);  // Recherche récursive dans l'enfant
+    int min = search_min(node);
 
-            // Si un fils a une valeur plus petite, met à jour le chemin
-            if (min_son < min) {
-                min = min_son;  // Mise à jour de la valeur minimale
-                path[0] = node->value;  // Ajoute la valeur du nœud actuel au chemin
-                for (int j = 0; j < temp_length; j++) {
-                    path[j + 1] = temp_path[j];  // Ajoute le chemin du sous-arbre au chemin total
+    for (int i = 0; i < node->nbSons; i++) {                                                       //Boucle pour parcourir chaque fils
+        if (node->sons[i] != NULL) {                                                               //Si le noeud du fils existe
+            int temp_length = 0;                                                                   //Initialisation d'une variable temporaire de la longueur du chemin du fils
+            int *temp_path = (int *)malloc(NB_choices *sizeof(int));                           //Tableau dynamique qui stocke temporairement le chemin
+            int min_son = path_min(node->sons[i],temp_path ,&temp_length);    //Appel récursif pour stocker le chemin et la longueur temporaire du fils
+
+
+            if (min_son < min) {                                                                    //Condition pour savoir si le minimum du fils est inférieur au minimum actuel
+                min = min_son;                                                                      //Mise à jour du minimum
+                path[0] = node->value;                                                              //Ajoute la valeur du noeud actuel
+                for (int j = 0; j < temp_length; j++){                                              //Boucle pour avoir le chemin finale partant de la racine jusqu'à la feuille minimale
+                    path[j+1] = temp_path[j];
+
                 }
                 *path_length = temp_length + 1;  // Met à jour la longueur du chemin
             }
@@ -134,4 +146,18 @@ int path_min(t_node* node, int* path, int* path_length) {
         }
     }
     return min;
-}
+}*/
+/*
+void path_min(t_node *node, t_stack stack, int min){
+    if (node->nbSons!=0){
+        for (int i = 0; i < node->nbSons; i++) {
+            if ((node->sons[i]!=NULL) && (stack.size != stack.nbElts)){
+                if(search_min(node->sons[i]) == min){
+                    printf("adding, %d, %d\n", stack.size, stack.nbElts);
+                    push(&stack, i);
+                    path_min(node, stack, min);
+                }
+            }
+        }
+    }
+}*/
