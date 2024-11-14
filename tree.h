@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-
 #include "stack.h"
 #include "map.h"
 #include "moves.h"
