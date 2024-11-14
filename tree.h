@@ -12,14 +12,14 @@
 #include "map.h"
 #include "moves.h"
 
-#define NB_possibilities 5
-#define NB_choices 3
-#define MAX_depth 100
+#define NB_possibilities 9
+#define NB_choices 5
 
 typedef struct s_node
 {
     int value;
     int depth;
+    t_move mouvement;
     t_soil soil_type;
     struct s_node **sons;
     int nbSons; // Taille physique du tableau
@@ -30,12 +30,14 @@ t_move* random_possibilities();
 
 t_move* remove_possibility(t_move*, int, int);
 
-t_node *createNode(int, int, t_localisation, t_map);
+t_node *createNode(int, int, t_move, t_localisation, t_map);
 
-t_node *create_all_Node(int, int, t_move*, t_localisation, t_map);
+t_node *create_all_Node(int, int, t_move, t_move*, t_localisation, t_map);
 
 int search_min(t_node *);
 
-int path_min(t_node *,int *, int *);
+void path_min(t_node *, t_stack, int);
+
+int nb_min(t_node *node, int min);
 
 #endif //UNTITLED1_TREE_H

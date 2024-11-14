@@ -39,11 +39,13 @@ int main() {
     t_localisation loc = loc_init(2, 6, NORTH);
 
     t_node* node = NULL;
-    node = create_all_Node(NB_possibilities, 0, test, loc, map);
+    node = create_all_Node(NB_possibilities, 0, INITIAL_POS, test, loc, map);
 
-    //printf("Min = %d\n", search_min(node));
+    int a = search_min(node);
+    printf("Min = %d\n", a);
+    printf("Nb min = %d\n", nb_min(node, a)); //test
 
-    int path[MAX_depth];
+    /*int path[NB_choices];
     int path_length = 0;
     int min_val = path_min(node,path,&path_length);
     printf("Feuille de valeur minimale = %d\n", min_val);
@@ -54,6 +56,15 @@ int main() {
         }
     }
     free(node);
-    free(test);
+    free(test);*/
+
+    /*t_stack stack = createStack(NB_choices);
+    path_min(node, stack, a);
+    int idx[NB_choices];
+    for (int i=5; i>0; i--){
+        idx[i] = pop(&stack);
+        printf("%d ", idx[i]);
+    }*/
+
     return 0;
 }
