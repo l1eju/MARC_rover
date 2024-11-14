@@ -1,14 +1,16 @@
-#ifndef TREE_H
-#define TREE_H
+#ifndef UNTITLED1_TREE_H
+#define UNTITLED1_TREE_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "map.h"
-#include "moves.h"  // Inclure les définitions de mouvements et localisation
 
-#define NB_possibilities 7  // Nombre de mouvements possibles à chaque étape (mis à jour à 7)
-#define NB_choices 5        // Profondeur maximale de l'arbre (mise à jour à 5)
+#include "stack.h"
+#include "map.h"
+#include "moves.h"
+
+#define NB_possibilities 5
+#define NB_choices 3
 
 typedef struct s_node {
     int value;             // Coût du nœud (représente par exemple le coût d'une case dans la carte)
@@ -17,6 +19,7 @@ typedef struct s_node {
     struct s_node **sons;  // Tableau des enfants du nœud (les nœuds suivants qui représentent les mouvements possibles)
     int nbSons;            // Nombre d'enfants (peut être 0 si ce nœud est une feuille)
 } t_node;  // Définition du type de données pour un nœud de l'arbre
+
 
 // Déclarations des fonctions utilisées dans la gestion des arbres
 
@@ -38,4 +41,4 @@ int search_min(t_node *);
 // Fonction pour trouver le chemin avec la valeur minimale dans l'arbre (recherche du meilleur chemin)
 int path_min(t_node *, int *, int *);
 
-#endif // TREE_H
+#endif //UNTITLED1_TREE_H
