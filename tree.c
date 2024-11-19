@@ -88,6 +88,12 @@ t_node *create_all_Node(int nb_poss, int depth, t_move mouvement, t_move* possib
     return node;
 }
 
+/*
+t_tree create_tree(int nb_poss, int depth, t_move mouvement, t_move* possibilities, t_localisation robot, t_map map){
+    t_tree t;
+    t.root = create_all_Node(nb_poss, depth, mouvement, possibilities, robot, map);
+    return t;
+}*/
 
 int search_min(t_node *node){  //Fonction pour chercher une feuille de valeur minimum
     int min = node->value;
@@ -119,6 +125,30 @@ int nb_min(t_node *node, int min){  //Fonction pour chercher une feuille de vale
     return nb;
 }
 
+void BFVisit(t_node *node)
+{
+    t_queue_tab q;
+    p_node cur;
+    q = createEmptyQueue();
+    enqueue(&q, );
+
+    printf("[");
+    while (q.first != q.last){
+        cur = dequeue(&q);
+        printf(" %d :", cur->value);
+
+        if (cur->left != NULL){
+            enqueue(&q, cur->left);
+
+        }
+        if (cur->right != NULL){
+            enqueue(&q, cur->right);
+        }
+    }
+    printf("]\n");
+    return;
+}
+
 /*int* path_min_v1(t_node *node, int *path, int *path_length) {               //Fonction qui permet de chercher la valeur minimum et le chemin depuis la racine vers cette feuille
 
     int min = search_min(node);
@@ -143,17 +173,46 @@ int nb_min(t_node *node, int min){  //Fonction pour chercher une feuille de vale
     }
     return min;
 }*/
-/*
-void path_min(t_node *node, t_stack stack, int min){
+
+
+
+
+/*void list_of_min_node(t_node *node, int min, t_ht_list* mylist){
+
     if (node->nbSons!=0){
         for (int i = 0; i < node->nbSons; i++) {
-            if ((node->sons[i]!=NULL) && (stack.size != stack.nbElts)){
-                if(search_min(node->sons[i]) == min){
-                    printf("adding, %d, %d\n", stack.size, stack.nbElts);
-                    push(&stack, i);
-                    path_min(node, stack, min);
+            if (node->sons[i]!=NULL){
+                if (node->sons[i]->value == min) add_node_to_list(&mylist, node->sons[i]);
+                else if(search_min(node->sons[i]) == min){
+                    path_min(node, min, mylist);
                 }
             }
         }
     }
-}*/
+}
+
+void compare_and_choose_best_path(t_ht_list mylist, t_node root){
+    int best_val = 10000, idx=0, curr_idx = 0;
+
+    while (mylist.head != NULL){
+        t_stack stack = createStack(NB_choices);
+        t_node current = mylist.head->value;
+        int val = 0;
+        while (current != root){
+            val += current.value;
+            current = current.parent;
+        }
+        if (val<best_val){
+            best_val = val;
+            idx = curr_idx;
+        }
+    }
+}
+
+void path(t_ht_list mylist, t_node root, int idx) {
+    for (int i=0; i<idx; i++){
+        mylist.head = mylist.head->next;
+    }
+    //stack t_move cm6
+}
+*/
