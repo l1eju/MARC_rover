@@ -1,9 +1,14 @@
+//
+// Created by wengj on 22/10/2024.
+//
+
 #ifndef UNTITLED1_TREE_H
 #define UNTITLED1_TREE_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "struct_for_tree.h"
 #include "stack.h"
 #include "map.h"
 #include "moves.h"
@@ -17,30 +22,34 @@ typedef struct s_node
     int depth;
     t_move mouvement;
     t_soil soil_type;
+    struct s_node *parent;
     struct s_node **sons;
     int nbSons; // Taille physique du tableau
 } t_node;
 
+typedef struct s_node t_node, *p_node;
 
-// Déclarations des fonctions utilisées dans la gestion des arbres
+typedef struct s_tree
+{
+    t_node *root;
+} t_tree;
 
-// Fonction pour générer des mouvements possibles aléatoires
 t_move* random_possibilities();
 
-// Fonction pour supprimer un mouvement d'une liste de mouvements possibles
 t_move* remove_possibility(t_move*, int, int);
 
 t_node *createNode(int, int, t_move, t_localisation, t_map);
 
 t_node *create_all_Node(int, int, t_move, t_move*, t_localisation, t_map);
 
-
-// Fonction pour rechercher la valeur minimale parmi les nœuds de l'arbre
 int search_min(t_node *);
 
-void path_min(t_node *, t_stack, int);
+void path_min(t_node *node, int min, t_ht_list* mylist);
 
 int nb_min(t_node *node, int min);
 
+
+void list_of_min_node(t_node *node, int min, t_ht_list* mylist);
+void find_all_path();
 
 #endif //UNTITLED1_TREE_H
