@@ -1,31 +1,29 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "map.h"
 #include "tree.h"
 
 int main() {
 
+
     t_map map = createMapFromFile("..\\maps\\example1.map");
     printf("Map created with dimensions %d x %d\n", map.y_max, map.x_max);
-    for (int i = 0; i < map.y_max; i++)
-    {
-        for (int j = 0; j < map.x_max; j++)
-        {
+    for (int i = 0; i < map.y_max; i++) {
+        for (int j = 0; j < map.x_max; j++) {
             printf("%d ", map.soils[i][j]);
         }
         printf("\n");
     }
+
     // printf the costs, aligned left 5 digits
-    for (int i = 0; i < map.y_max; i++)
-    {
-        for (int j = 0; j < map.x_max; j++)
-        {
+    for (int i = 0; i < map.y_max; i++) {
+        for (int j = 0; j < map.x_max; j++) {
             printf("%-5d ", map.costs[i][j]);
         }
         printf("\n");
     }
 
     displayMap(map);
-
 
     t_move* test;
     test = random_possibilities();
@@ -46,6 +44,7 @@ int main() {
     printf("Nb min = %d\n", nb_min(node, a)); //test
 
     /*int path[NB_choices];
+
     int path_length = 0;
     int min_val = path_min(node,path,&path_length);
     printf("Feuille de valeur minimale = %d\n", min_val);
