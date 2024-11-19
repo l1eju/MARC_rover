@@ -26,7 +26,7 @@ int main() {
     displayMap(map);
 
     t_move* test;
-    test = random_possibilities();
+    test = random_possibilities(NB_possibilities);
 
     for (int j = 0; j < NB_possibilities; j++)
     {
@@ -34,10 +34,10 @@ int main() {
     }
     printf("\n");
 
-    t_localisation loc = loc_init(2, 6, NORTH);
+    t_localisation loc = loc_init(4, 6, NORTH);
 
     t_node* node = NULL;
-    node = create_all_Node(NB_possibilities, 0, INITIAL_POS, test, loc, map);
+    node = create_all_Node(NB_possibilities, 0, INITIAL_POS, test, loc, map, NULL);
 
     int a = search_min(node);
     printf("Min = %d\n", a);
