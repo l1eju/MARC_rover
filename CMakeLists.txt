@@ -15,5 +15,4 @@ add_executable(untitled1 main.c
         stack.c
         stack.h
         tree.c
-        struct_for_tree.c
-        struct_for_tree.h)
+)

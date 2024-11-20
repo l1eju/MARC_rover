@@ -96,13 +96,17 @@ t_tree create_tree(int nb_poss, int depth, t_move mouvement, t_move* possibiliti
     return t;
 }
 
-int search_min(p_node node){  //Fonction pour chercher une feuille de valeur minimum
+int search_min(t_tree t){
+    return search_min_node(t.root);
+}
+
+int search_min_node(p_node node){  //Fonction pour chercher une feuille de valeur minimum
     int min = node->value;
 
     if (node->nbSons!=0){
         for (int i = 0; i < node->nbSons; i++) {
             if (node->sons[i]!=NULL){
-                int min_son = search_min(node->sons[i]);
+                int min_son = search_min_node(node->sons[i]);
                 if (min_son < min){
                     min = min_son;
                 }
@@ -126,97 +130,81 @@ int nb_min(p_node node, int min){  //Fonction pour chercher une feuille de valeu
     return nb;
 }
 
-void BFVisit(p_node node)
-{
+p_node* tab_of_min(p_node node, int* len){
+
+    int min_val = search_min_node(node);
+    p_node* min_leaf = (p_node*) malloc(MAX*sizeof(p_node));
+
     t_queue_tab q;
     p_node cur;
     q = createEmptyQueue();
     enqueue_node(&q, node);
 
-    printf("[");
     while (q.first != q.last){
         cur = dequeue_node(&q);
-        printf(" %d :", cur->value);
 
-        for (int i = 0; i<node->parent->nbSons; i++){
-            if (cur->sons[i] != NULL) {
-                enqueue_node(&q, cur->sons[i]);
-            }
-        }
-    }
-    printf("]\n");
-}
+        if(cur->value == min_val){
+            int depth_of_min = cur->depth;
 
-/*int* path_min_v1(t_node *node, int *path, int *path_length) {               //Fonction qui permet de chercher la valeur minimum et le chemin depuis la racine vers cette feuille
+            while (cur->depth == depth_of_min && q.first != q.last){
 
-    int min = search_min(node);
-
-    for (int i = 0; i < node->nbSons; i++) {                                                       //Boucle pour parcourir chaque fils
-        if (node->sons[i] != NULL) {                                                               //Si le noeud du fils existe
-            int temp_length = 0;                                                                   //Initialisation d'une variable temporaire de la longueur du chemin du fils
-            int *temp_path = (int *)malloc(NB_choices *sizeof(int));                           //Tableau dynamique qui stocke temporairement le chemin
-            int min_son = path_min(node->sons[i],temp_path ,&temp_length);    //Appel récursif pour stocker le chemin et la longueur temporaire du fils
-
-
-            if (min_son < min) {                                                                    //Condition pour savoir si le minimum du fils est inférieur au minimum actuel
-                min = min_son;                                                                      //Mise à jour du minimum
-                path[0] = node->value;                                                              //Ajoute la valeur du noeud actuel
-                for (int j = 0; j < temp_length; j++){                                              //Boucle pour avoir le chemin finale partant de la racine jusqu'à la feuille minimale
-                    path[j+1] = temp_path[j];
+                if(cur->value == min_val){
+                    min_leaf[*len] = cur;
+                    //printf("cur = %d, minleaf[] = %d, len = %d\n", cur->value, min_leaf[*len]->value, *len);
+                    (*len)++;
                 }
-                *path_length = temp_length + 1;                                                         //Mise à jour de la longueur totale du chemin
+
+                cur = dequeue_node(&q);
             }
-            free(temp_path);                                                                //Libère la mémoire car on ne l'utilise plus
+            return min_leaf;
         }
-    }
-    return min;
-}*/
-
-
-
-
-/*void list_of_min_node(t_node *node, int min, t_ht_list* mylist){
-
-    if (node->nbSons!=0){
-        for (int i = 0; i < node->nbSons; i++) {
-            if (node->sons[i]!=NULL){
-                if (node->sons[i]->value == min) add_node_to_list(&mylist, node->sons[i]);
-                else if(search_min(node->sons[i]) == min){
-                    path_min(node, min, mylist);
+        else if (cur->nbSons!=0){
+            for (int i = 0; i < cur->nbSons; i++) {
+                if (cur->sons[i]!=NULL){
+                    enqueue_node(&q, cur->sons[i]);
                 }
             }
         }
     }
+    return NULL;
 }
 
-void compare_and_choose_best_path(t_ht_list mylist, t_node root){
-    int best_val = 10000, idx=0, curr_idx = 0;
+p_node min_leaf(t_tree t) {
+    return min_leaf_node(t.root);
+}
 
-    while (mylist.head != NULL){
-        t_stack stack = createStack(NB_choices);
-        t_node current = mylist.head->value;
-        int val = 0;
-        while (current != root){
-            val += current.value;
-            current = current.parent;
+p_node min_leaf_node(p_node node){
+    int len = 0, cost = 0, cheaper = 10000, idx;
+    p_node* tab_min = tab_of_min(node, &len);
+
+    for (int i=0; i<len; i++){
+        p_node cur = tab_min[i];
+        while (cur != NULL) {
+            cost += cur->value;
+            cur = cur->parent;
         }
-        if (val<best_val){
-            best_val = val;
-            idx = curr_idx;
+        if (cost < cheaper){
+            cheaper = cost;
+            idx = i;
         }
     }
+    return tab_min[idx];
 }
 
-void path(t_ht_list mylist, t_node root, int idx) {
-    for (int i=0; i<idx; i++){
-        mylist.head = mylist.head->next;
+t_move* best_path(t_tree t, int *len){
+    p_node leaf = min_leaf(t);
+    int depth = leaf->depth;
+    *len = depth-1;
+    t_move* path = (t_move*) malloc((depth) * sizeof(t_move));
+
+    for (int i = depth-1; i>=0; i--){
+        path[i] = leaf->mouvement;
+        leaf = leaf->parent;
     }
-    //stack t_move cm6
+    return path;
 }
-*/
 
-
-
+//Fonction de queue pour p_node
 t_queue_tab createEmptyQueue()
 {
     t_queue_tab q;
