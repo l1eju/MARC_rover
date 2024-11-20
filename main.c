@@ -5,7 +5,6 @@
 
 int main() {
 
-
     t_map map = createMapFromFile("..\\maps\\example1.map");
     printf("Map created with dimensions %d x %d\n", map.y_max, map.x_max);
     for (int i = 0; i < map.y_max; i++) {
@@ -28,42 +27,30 @@ int main() {
     t_move* test;
     test = random_possibilities(NB_possibilities);
 
-    for (int j = 0; j < NB_possibilities; j++)
-    {
-        printf("%s   ", getMoveAsString(test[j]));
+    printf("Mouvement possible : [ ");
+    for (int j = 0; j < NB_possibilities; j++){
+        printf("%s ; ", getMoveAsString(test[j]));
     }
-    printf("\n");
+    printf("]\n");
 
     t_localisation loc = loc_init(4, 6, NORTH);
 
-    t_node* node = NULL;
-    node = create_all_Node(NB_possibilities, 0, INITIAL_POS, test, loc, map, NULL);
+    t_tree tree;
+    tree = create_tree(NB_possibilities, 0, INITIAL_POS, test, loc, map);
+    int min_val = search_min(tree);
+    printf("La valeur minimum sur laquelle MARC peut arriver = %d\n", min_val);
 
-    int a = search_min(node);
-    printf("Min = %d\n", a);
-    printf("Nb min = %d\n", nb_min(node, a)); //test
+    p_node feuille_min = min_leaf(tree);    //La feuille de valeur mininale
 
-    /*int path[NB_choices];
+    int nb_move;
+    t_move* path = best_path(tree, &nb_move);
 
-    int path_length = 0;
-    int min_val = path_min(node,path,&path_length);
-    printf("Feuille de valeur minimale = %d\n", min_val);
-    for (int i = 0; i < path_length; i++){
-        printf("%d ",path[i]);
-        if (i != path_length - 1) {
-            printf("-> ");
-        }
+    printf("Mouvement à effectuer pour arriver à la feuille de valeur mininale : [");
+    for (int j = 0; j <= nb_move; j++)
+    {
+        printf("%s ; ", getMoveAsString(path[j]));
     }
-    free(node);
-    free(test);*/
-
-    /*t_stack stack = createStack(NB_choices);
-    path_min(node, stack, a);
-    int idx[NB_choices];
-    for (int i=5; i>0; i--){
-        idx[i] = pop(&stack);
-        printf("%d ", idx[i]);
-    }*/
+    printf("]\n");
 
     return 0;
 }

@@ -14,7 +14,7 @@
 
 #define NB_possibilities 9
 #define NB_choices 5
-#define MAX 10000
+#define MAX 18730
 
 
 typedef struct s_node
@@ -35,17 +35,6 @@ typedef struct s_tree
     p_node root;
 } t_tree;
 
-typedef struct s_cell {
-    struct s_node* value;
-    struct s_cell* next;
-} t_cell;
-
-typedef struct s_ht_list
-{
-    t_cell *head;   	// adresse de la première cellule
-    t_cell *tail;   	// adresse de la dernière cellule
-} t_ht_list;
-
 typedef struct s_queue_tab
 {
     p_node values[MAX];
@@ -60,19 +49,28 @@ p_node createNode(int nb_sons, int depth, t_move mouvement, t_localisation loc, 
 
 p_node create_all_Node(int nb_poss, int depth, t_move mouvement, t_move* possibilities, t_localisation robot, t_map map, p_node parent_node);
 
-int search_min(t_node *);
+t_tree create_tree(int nb_poss, int depth, t_move mouvement, t_move* possibilities, t_localisation robot, t_map map);
 
-//void path_min(t_node *node, int min, t_ht_list* mylist);
+int search_min(t_tree);
 
-int nb_min(t_node *node, int min);
+int search_min_node(p_node node);
+
+int nb_min(t_node *node, int min); //Fonction bonus
+
+p_node* tab_of_min(p_node node, int* len);
+
+p_node min_leaf(t_tree t);
+
+p_node min_leaf_node(p_node node);
+
+t_move* best_path(t_tree t, int *len);
 
 
-//void list_of_min_node(t_node *node, int min, t_ht_list* mylist);
-void find_all_path();
-
-
+//Fonction de queue pour p_node
 t_queue_tab createEmptyQueue();
+
 void enqueue_node(t_queue_tab *, p_node);
+
 p_node dequeue_node(t_queue_tab *);
 
 
