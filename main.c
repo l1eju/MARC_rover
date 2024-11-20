@@ -27,9 +27,13 @@ int main() {
     t_move* test;
     test = random_possibilities(NB_possibilities);
 
-    printf("Mouvement possible : [ ");
+    printf("Mouvements possibles : [ ");
     for (int j = 0; j < NB_possibilities; j++){
-        printf("%s ; ", getMoveAsString(test[j]));
+        printf("%s ", getMoveAsString(test[j]));
+        if (j < NB_possibilities - 1)
+        {
+            printf("; ");
+        }
     }
     printf("]\n");
 
@@ -40,15 +44,19 @@ int main() {
     int min_val = search_min(tree);
     printf("La valeur minimum sur laquelle MARC peut arriver = %d\n", min_val);
 
-    p_node feuille_min = min_leaf(tree);    //La feuille de valeur mininale
+    p_node feuille_min = min_leaf(tree);    //La feuille de valeur minimale
 
     int nb_move;
     t_move* path = best_path(tree, &nb_move);
 
-    printf("Mouvement à effectuer pour arriver à la feuille de valeur mininale : [");
+    printf("Mouvement a effectuer pour arriver a la feuille de valeur minimale : [");
     for (int j = 0; j <= nb_move; j++)
     {
-        printf("%s ; ", getMoveAsString(path[j]));
+        printf("%s ", getMoveAsString(path[j]));
+        if (j < nb_move)
+        {
+            printf("; ");
+        }
     }
     printf("]\n");
 
