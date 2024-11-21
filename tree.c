@@ -11,19 +11,30 @@ t_move* random_possibilities(){              //Fonction qui génère aléatoirem
     int tab_moves_limits[] = {22, 15, 7, 7, 21, 21, 7};                           //Tableau avec les différentes limites de chaque mouvement
     t_move moves[] = {F_10, F_20, F_30, B_10, T_LEFT, T_RIGHT, U_TURN};           //Tableau avec les différents types de mouvements
 
-    //Remplissage du tableau de mouvement
-    for (int i = 0; i < NB_possibilities; i++)
-    {
-        int move = 0;                                           //Initialisation du mouvement à 0 car il n'a pas été trouvé
-        while (!move)                                           //Condition pour parcourir jusqu'à ce qu'on trouve un mouvement valide
+
+    printf("Nombre tirage : [F_10: %d, F_20: %d, F_30: %d, B_10: %d, T_LEFT: %d, T_RIGHT: %d, U_TURN: %d]\n\n",
+           tab_moves_limits[0], tab_moves_limits[1], tab_moves_limits[2],tab_moves_limits[3], tab_moves_limits[4], tab_moves_limits[5], tab_moves_limits[6]);
+
+    int i = 0;
+    while(i < NB_possibilities) {
+        int rand_move = rand() % 7;
+        int lim = 0;
+        for(int k = 0; k < 7; k++){
+            lim+= tab_moves_limits[k];
+        }
+        if (lim == 0){
+            printf("Limite atteint avant d'avoir %d mouvements !\n", NB_possibilities);
+            break; // Arrêt forcé si on a atteint la lim
+        }
+
+        if (tab_moves_limits[rand_move] >0)                //Vérification du mouvement choisi s'il reste encore des tirages possibles
         {
-            int rand_move = rand() % 7;                         //Indice tiré aléatoirement pour les mouvements
-            if (tab_moves_limits[rand_move] > 0)                //Vérification du mouvement choisi s'il reste encore des tirages possibles
-            {
-                possibilities[i] = moves[rand_move];            //Ajout du mouvement tiré dans le tableau de mouvement à la i ème position
-                tab_moves_limits[rand_move]--;                  //Réduire le nombre de mouvements
-                move = 1;                                       //Mouvement trouvé
-            }
+            possibilities[i] = moves[rand_move];            //Ajout du mouvement tiré dans le tableau de mouvement à la i ème position
+            tab_moves_limits[rand_move]--;                  //Réduire le nombre de mouvements
+
+            printf("Mouvement utilise : %d (%s),\nTirage restant : [F_10: %d, F_20: %d, F_30: %d, B_10: %d, T_LEFT: %d, T_RIGHT: %d, U_TURN: %d]\n\n",
+                   rand_move, getMoveAsString(moves[rand_move]), tab_moves_limits[0], tab_moves_limits[1], tab_moves_limits[2], tab_moves_limits[3], tab_moves_limits[4], tab_moves_limits[5], tab_moves_limits[6]);
+            i++;
         }
     }
     return possibilities;
