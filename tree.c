@@ -4,82 +4,22 @@
 
 #include "tree.h"
 
-t_move* random_possibilities(){              //Fonction qui génère aléatoirement des différents types de mouvements possédant des limites
-    srand(time(NULL));  //Set la fonction rand
-    t_move* possibilities = (t_move*) malloc(NB_possibilities * sizeof(t_move));                         //Allocation dynamique du tableau de mouvement tiré au hasard
 
-    int tab_moves_limits[] = {22, 15, 7, 7, 21, 21, 7};                           //Tableau avec les différentes limites de chaque mouvement
-    t_move moves[] = {F_10, F_20, F_30, B_10, T_LEFT, T_RIGHT, U_TURN};           //Tableau avec les différents types de mouvements
-
-
-    printf("Nombre tirage : [F_10: %d, F_20: %d, F_30: %d, B_10: %d, T_LEFT: %d, T_RIGHT: %d, U_TURN: %d]\n\n",
-           tab_moves_limits[0], tab_moves_limits[1], tab_moves_limits[2],tab_moves_limits[3], tab_moves_limits[4], tab_moves_limits[5], tab_moves_limits[6]);
-
-    int i = 0;
-    while(i < NB_possibilities) {
-        int rand_move = rand() % 7;
-        int lim = 0;
-        for(int k = 0; k < 7; k++){
-            lim+= tab_moves_limits[k];
-        }
-        if (lim == 0){
-            printf("Limite atteint avant d'avoir %d mouvements !\n", NB_possibilities);
-            break; // Arrêt forcé si on a atteint la lim
-        }
-
-        if (tab_moves_limits[rand_move] >0)                //Vérification du mouvement choisi s'il reste encore des tirages possibles
-        {
-            possibilities[i] = moves[rand_move];            //Ajout du mouvement tiré dans le tableau de mouvement à la i ème position
-            tab_moves_limits[rand_move]--;                  //Réduire le nombre de mouvements
-
-            printf("Mouvement utilise : %d (%s),\nTirage restant : [F_10: %d, F_20: %d, F_30: %d, B_10: %d, T_LEFT: %d, T_RIGHT: %d, U_TURN: %d]\n\n",
-                   rand_move, getMoveAsString(moves[rand_move]), tab_moves_limits[0], tab_moves_limits[1], tab_moves_limits[2], tab_moves_limits[3], tab_moves_limits[4], tab_moves_limits[5], tab_moves_limits[6]);
-            i++;
-        }
-    }
-    return possibilities;
-}
-        /*switch (1 + rand() % 7) {    //On prend le mouvement associé au chiffre tiré et on le met dans le tableau de mouvement
-            case 1:
-                possibilities[i] = F_10;
-                break;
-            case 2:
-                possibilities[i] = F_20;
-                break;
-            case 3:
-                possibilities[i] = F_30;
-                break;
-            case 4:
-                possibilities[i] = B_10;
-                break;
-            case 5:
-                possibilities[i] = T_LEFT;
-                break;
-            case 6:
-                possibilities[i] = T_RIGHT;
-                break;
-            case 7:
-                possibilities[i] = U_TURN;
-                break;
-        }
-    }
-    return possibilities;   //A modifier pour 9 possibilités car certains mouvements sont limités à 7
-}*/
-
-t_move* remove_possibility(t_move* possibilities, int len, int idx){
-    t_move* new_possibilities = (t_move*) malloc((len-1)*sizeof(t_move));
+t_move* remove_move(t_move* moves, int len, int idx){
+    t_move* new_moves = (t_move*) malloc((len-1)*sizeof(t_move));
     int j = 0;
     for (int i = 0; i < len-1; i++){
         if (i == idx) j++;
-        new_possibilities[i] = possibilities[j];
+        new_moves[i] = moves[j];
         j++;
     }
-    return new_possibilities;
+    return new_moves;
 }
 
 p_node createNode(int nb_sons, int depth, t_move mouvement, t_localisation loc, t_map map, p_node node){
     p_node new_node;                                           //Initialise le nouvel arbre
     new_node = (t_node *)malloc(sizeof(t_node));
+
     new_node->value = map.costs[loc.pos.y][loc.pos.x];          //Définit le coût de la case
     new_node->depth = depth;                                    //Définit la profondeur du noeud
     new_node->mouvement = mouvement;
@@ -87,10 +27,8 @@ p_node createNode(int nb_sons, int depth, t_move mouvement, t_localisation loc, 
     new_node->soil_type = map.soils[loc.pos.y][loc.pos.x];      //Définit le type de sol de la case
     new_node->nbSons = nb_sons;                                 //Définit son nombre d'enfants
     new_node->sons = (t_node **)malloc(nb_sons*sizeof(t_node *));
-    for (int i = 0; i < nb_sons; i++)
-    {
-        new_node->sons[i] = NULL;
-    }
+    for (int i = 0; i < nb_sons; i++)   new_node->sons[i] = NULL;
+
     return new_node;
 }
 
@@ -102,13 +40,11 @@ p_node create_all_Node(int nb_poss, int depth, t_move mouvement, t_move* possibi
     p_node node = createNode(nb_poss, depth, mouvement, robot, map, parent_node);                     //Initialise le nouveau noeud
 
     for (int i = 0; i < nb_poss; i++) {
-
         t_localisation new_loc = robot;
         updateLocalisation(&new_loc, possibilities[i]);                                                                 //On stocke la nouvelle position du robot selon le mouvement associé dans new_loc
 
         if (isValidLocalisation(new_loc.pos, map.x_max, map.y_max)) {                                                   //Si la position après le mouvement est valide, on crée les enfants
-
-            t_move* new_possibilities = remove_possibility(possibilities, nb_poss, i);                          //On crée le nouveau tableau de possibilités en retirant la case du noeud qu'on va créer car on l'aura déjà utilisé et on a déjà stocker la position après le mouvement pour connaître le coût
+            t_move* new_possibilities = remove_move(possibilities, nb_poss, i);                  //On crée le nouveau tableau de possibilités en retirant la case du noeud qu'on va créer car on l'aura déjà utilisé et on a déjà stocker la position après le mouvement pour connaître le coût
             node->sons[i] = create_all_Node(nb_poss - 1, depth+1, possibilities[i], new_possibilities, new_loc, map, node); //On utilise la récursivité pour obtenir l'enfant avec les nouveaux paramètres
             free(new_possibilities);                                                                            //On libère la mémoire de new_possibilities
         }
@@ -158,103 +94,4 @@ int nb_min(p_node node, int min){  //Fonction pour chercher le nombre de valeur 
     }
     if (node->value == min) nb += 1;
     return nb;
-}
-
-p_node* tab_of_min(p_node node, int* len){
-
-    int min_val = search_min_node(node);
-    p_node* min_leaf = (p_node*) malloc(MAX * sizeof(p_node));
-
-    t_queue_tab q;
-    p_node cur;
-    q = createEmptyQueue();
-    enqueue_node(&q, node);
-
-    while (q.first != q.last){
-        cur = dequeue_node(&q);
-
-        if(cur->value == min_val){
-            int depth_of_min = cur->depth;
-
-            while (cur->depth == depth_of_min && q.first != q.last){
-
-                if(cur->value == min_val){
-                    min_leaf[*len] = cur;
-                    //printf("cur = %d, minleaf[] = %d, len = %d\n", cur->value, min_leaf[*len]->value, *len);
-                    (*len)++;
-                }
-
-                cur = dequeue_node(&q);
-            }
-            return min_leaf;
-        }
-        else if (cur->nbSons != 0){
-            for (int i = 0; i < cur->nbSons; i++) {
-                if (cur->sons[i] != NULL){
-                    enqueue_node(&q,cur->sons[i]);
-                }
-            }
-        }
-    }
-    return NULL;
-}
-
-p_node min_leaf(t_tree t) {
-    return min_leaf_node(t.root);
-}
-
-p_node min_leaf_node(p_node node){
-    int len = 0, cost = 0, cheaper = 10000, idx;
-    p_node* tab_min = tab_of_min(node, &len);
-
-    for (int i = 0; i < len; i++){
-        p_node cur = tab_min[i];
-        while (cur != NULL) {
-            cost += cur->value;
-            cur = cur->parent;
-        }
-        if (cost < cheaper){
-            cheaper = cost;
-            idx = i;
-        }
-    }
-    return tab_min[idx];
-}
-
-t_move* best_path(t_tree t, int *len){                                  //Fonction pour la recherche du meilleur chemin, c'est-à-dire, le cou^t le moins chère
-    p_node leaf = min_leaf(t);
-    int depth = leaf->depth;
-    *len = depth - 1;
-    t_move* path = (t_move*) malloc((depth) * sizeof(t_move));
-
-    for (int i = depth - 1; i >= 0; i--){
-        path[i] = leaf->mouvement;
-        leaf = leaf->parent;
-    }
-    return path;
-}
-
-//Fonction de queue pour p_node
-t_queue_tab createEmptyQueue()
-{
-    t_queue_tab q;
-    q.first = q.last = 0;
-    return q;
-}
-
-void enqueue_node(t_queue_tab *pq, p_node val)
-{
-    int pos;
-    pos = pq->last % MAX;
-    pq->values[pos] = val;
-    pq->last = pq->last + 1;
-}
-
-p_node dequeue_node(t_queue_tab *pq)
-{
-    p_node res;
-    int pos = pq->first % MAX;
-    res = pq->values[pos];
-    pq->first = pq->first + 1;
-    return res;
 }

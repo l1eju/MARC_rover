@@ -7,7 +7,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include "stack.h"
 #include "map.h"
 #include "moves.h"
@@ -35,15 +34,9 @@ typedef struct s_tree
     p_node root;
 } t_tree;
 
-typedef struct s_queue_tab
-{
-    p_node values[MAX];
-    int first, last;
-} t_queue_tab;
 
-t_move* random_possibilities();
 
-t_move* remove_possibility(t_move*, int, int);
+t_move* remove_move(t_move*, int, int);
 
 p_node createNode(int nb_sons, int depth, t_move mouvement, t_localisation loc, t_map map, p_node node);
 
@@ -56,22 +49,5 @@ int search_min(t_tree);
 int search_min_node(p_node node);
 
 int nb_min(t_node *node, int min); //Fonction bonus
-
-p_node* tab_of_min(p_node node, int* len);
-
-p_node min_leaf(t_tree t);
-
-p_node min_leaf_node(p_node node);
-
-t_move* best_path(t_tree t, int *len);
-
-
-//Fonction de queue pour p_node
-t_queue_tab createEmptyQueue();
-
-void enqueue_node(t_queue_tab *, p_node);
-
-p_node dequeue_node(t_queue_tab *);
-
 
 #endif //UNTITLED1_TREE_H

@@ -15,4 +15,8 @@ add_executable(untitled1 main.c
         stack.c
         stack.h
         tree.c
+        path.c
+        path.h
+        node_queue.c
+        node_queue.h
 )

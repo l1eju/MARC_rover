@@ -6,6 +6,7 @@
 #define UNTITLED1_MOVES_H
 
 #include "loc.h"
+#include <time.h>
 
 /**
  * @brief Array of strings for the possible moves of the robot
