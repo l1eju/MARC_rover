@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "map.h"
-#include "tree.h"
+#include "path.h"
 
 int main() {
 
@@ -25,7 +25,7 @@ int main() {
     displayMap(map);
 
     t_move* test;
-    test = random_possibilities(NB_possibilities);
+    test = getRandomMoves(NB_possibilities);
 
     printf("Mouvements possibles : [ ");
     for (int j = 0; j < NB_possibilities; j++){
