@@ -6,7 +6,7 @@
 
 /**
  * @brief Supprime un mouvement d'un tab de mouvements.
- * @param moves Tab des mouvements dispo.
+ * @param moves Tableau des mouvements dispo.
  * @param len Longueur actuelle du tableau.
  * @param idx Indice du mouvement à supprimer.
  * @return Nouveau tableau de mouvements sans le mouvement supprimé (à l'indice idx).
@@ -40,13 +40,13 @@ p_node createNode(int nb_sons, int depth, t_move mouvement, t_localisation loc, 
 }
 
 /**
- * @brief Crée tous les nœuds pour un BST basé sur les possibilités de mouvement.
+ * @brief Crée tous les nœuds pour un arbre n-aires basé sur les possibilités de mouvement.
  * @return Le nœud créé avec ses fils.
  */
 p_node create_all_Node(int nb_poss, int depth, t_move mouvement, t_move* possibilities, t_localisation robot, t_map map, p_node parent_node){   //La fonction ne prends pas en compte si on avance de plus de 10 mètres ou si on a déjà marché sur une crevasse
     if (depth > NB_choices) return NULL;   //Si la profondeur est supérieur au nombre de choix, on retourne NULL
 
-    else if (depth == NB_choices || map.costs[robot.pos.y][robot.pos.x] >= 10000) nb_poss = 0;   //Si on est à la profondeur la plus bas, donc le dernier choix, ou que la case après le mouvement est une crevasse, le noeud n'aura pas d'enfant
+    else if (depth == NB_choices || map.costs[robot.pos.y][robot.pos.x] >= 10000) nb_poss = 0;   //Si on est à la profondeur la plus basse, donc le dernier choix, ou que la case après le mouvement est une crevasse, le noeud n'aura pas d'enfant
 
     p_node node = createNode(nb_poss, depth, mouvement, robot, map, parent_node);   //Initialise le nouveau noeud
 
@@ -59,7 +59,7 @@ p_node create_all_Node(int nb_poss, int depth, t_move mouvement, t_move* possibi
             node->sons[i] = create_all_Node(nb_poss - 1, depth+1, possibilities[i], new_possibilities, new_loc, map, node); //On utilise la récursivité pour obtenir l'enfant avec les nouveaux paramètres
             free(new_possibilities);   //On libère la mémoire de new_possibilities
         }
-        else{     //Si la position après le mouvement est valide, on ne crée pas d'enfant à la case concernée
+        else{     //Si la position après le mouvement est valide, on ne crée pas d'enfant à la case concernée et on le définit juste comme NULL
             node->sons[i] = NULL;
         }
     }
@@ -69,7 +69,7 @@ p_node create_all_Node(int nb_poss, int depth, t_move mouvement, t_move* possibi
 //Fonction pour la création d'un arbre basé sur les possibilités de mouvements
 t_tree create_tree(int nb_poss, int depth, t_move mouvement, t_move* possibilities, t_localisation robot, t_map map){
     t_tree t;
-    t.root = create_all_Node(nb_poss, depth, mouvement, possibilities, robot, map, NULL);//récursivité
+    t.root = create_all_Node(nb_poss, depth, mouvement, possibilities, robot, map, NULL);//Appel de la fonction de création des noeuds recursif
     return t;
 }
 //Cherche la val min dans l'abre
@@ -81,11 +81,11 @@ int search_min(t_tree t){
 int search_min_node(p_node node){
     int min = node->value;//Initialise la val min avec celle du noeud
 
-    if (node->nbSons != 0){ //Parcourt des fils si le noeud en a
+    if (node->nbSons != 0){ //Tant que le noeud a des fils, on les parcourt
         for (int i = 0; i < node->nbSons; i++) {
             if (node->sons[i] != NULL){
-                int min_son = search_min_node(node->sons[i]);//récursivité
-                if (min_son < min){//MAJ si val plus basse trouvée
+                int min_son = search_min_node(node->sons[i]);   //Appel récursif
+                if (min_son < min){ //On remplace min si une valeur plus basse est trouvée
                     min = min_son;
                 }
             }
@@ -97,10 +97,10 @@ int search_min_node(p_node node){
 int nb_min(p_node node, int min){  //Fonction pour chercher le nombre de valeur minimum
     int nb = 0; //Initialise le compteur
 
-    if (node->nbSons != 0){ //Parcourt des fils si le noeud en a
+    if (node->nbSons != 0){ //Tant que le noeud a des fils, on les parcourt
         for (int i = 0; i < node->nbSons; i++) {
             if (node->sons[i] != NULL){
-                nb += nb_min(node->sons[i], min);
+                nb += nb_min(node->sons[i], min);   //Appel récursif
             }
         }
     }

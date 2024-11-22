@@ -40,7 +40,7 @@ t_move* remove_move(t_move*, int, int); //Supprime un mouvement du tableau des p
 
 p_node createNode(int nb_sons, int depth, t_move mouvement, t_localisation loc, t_map map, p_node node);//Création d'un nouveau nœud dans l'arbre.
 
-p_node create_all_Node(int nb_poss, int depth, t_move mouvement, t_move* possibilities, t_localisation robot, t_map map, p_node parent_node);//Création de tous les nœuds d'un sous-arbre récursivement.
+p_node create_all_Node(int nb_poss, int depth, t_move mouvement, t_move* possibilities, t_localisation robot, t_map map, p_node parent_node);//Création de tous les nœuds récursivement.
 
 t_tree create_tree(int nb_poss, int depth, t_move mouvement, t_move* possibilities, t_localisation robot, t_map map); //Création de l'arbre complet à partir des possibilités de base.
 
@@ -48,6 +48,6 @@ int search_min(t_tree);// Cherche la valeur minimale dans l'arbre.
 
 int search_min_node(p_node node); //Cherche la valeur minimale à partir d'un noeud.
 
-int nb_min(t_node *node, int min); //Fonction bonus qui compte le nombre de nœuds ayant une valeur minimale donnée dans un sous-arbre
+int nb_min(t_node *node, int min); //Fonction bonus qui compte le nombre de nœuds ayant une valeur minimale
 
 #endif //UNTITLED1_TREE_H

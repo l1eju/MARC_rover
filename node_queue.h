@@ -17,6 +17,6 @@ t_queue_tab createEmptyQueue(); //Initialise une file vide
 
 void enqueue_node(t_queue_tab *, p_node); //Ajoute un noeud à la fin de la liste
 
-p_node dequeue_node(t_queue_tab *); // Retire et return un noeud en tête de liste
+p_node dequeue_node(t_queue_tab *); // Retire et retourne un noeud en tête de liste
 
 #endif //UNTITLED1_NODE_QUEUE_H

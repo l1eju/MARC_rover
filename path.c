@@ -4,37 +4,35 @@
 
 #include "path.h"
 /**
- * @brief Trouve toutes les feuilles de val min dans l'arbre.
- * @param node Nœud racine de l'arbre.
- * @param len Pointeur pour stocker le nb de feuilles trouvées.
- * @return Tab de pointeurs des feuilles avec val min.
+ * @brief Trouve toutes les feuilles de val min dans l'arbre
+ * @param node Nœud racine de l'arbre
+ * @param len Pointeur pour stocker le nb de feuilles trouvées
+ * @return Tableau de pointeurs des feuilles de valeur minimale
  */
 p_node* tab_of_min(p_node node, int* len){
 
     int min_val = search_min_node(node); //Cherche la val min dans l'arbre
-    p_node* min_leaf = (p_node*) malloc(MAX * sizeof(p_node));//Tab ou stocker les val min
+    p_node* min_leaf = (p_node*) malloc(MAX * sizeof(p_node));//Tableau où stocker les feuilles de val min
 
     t_queue_tab q;
     p_node cur;
-    q = createEmptyQueue(); //File pour parcourir l'arbre en profondeur
+    q = createEmptyQueue(); //File pour parcourir l'arbre en largeur
     enqueue_node(&q, node);// Ajoute le noeud racine dans la file
 
     while (q.first != q.last){ //Tant que file non vide
         cur = dequeue_node(&q); //Retirer un noeud de la file
 
         if(cur->value == min_val){ //Si le noeud est la val min
-            int depth_of_min = cur->depth;//Profondeur du min est la profondeur actuel
+            int depth_of_min = cur->depth;//La profondeur du min est la profondeur actuel
 
-            while (cur->depth == depth_of_min && q.first != q.last){
+            while (cur->depth == depth_of_min && q.first != q.last){//Tant que l'on a pas fini de parcourir la file et que la profondeur du min est la profondeur actuel (quasiment impossible)
 
-                if(cur->value == min_val){ //Si la val est val_min
-                    min_leaf[*len] = cur; //Ajoute dans le tab la val min
-                    //printf("cur = %d, minleaf[] = %d, len = %d\n", cur->value, min_leaf[*len]->value, *len);
-                    (*len)++;
+                if(cur->value == min_val){ //Si la val de cur est la val_min
+                    min_leaf[(*len)++] = cur; //Ajoute cur dans le tableau de feuille de val min et incrémente
                 }
-                cur = dequeue_node(&q);//Passe au noeud suivant dans la file
+                cur = dequeue_node(&q); //Passe au noeud suivant dans la file
             }
-            return min_leaf; //Retourne le tab de feuilles min trouvées
+            return min_leaf; //Retourne le tab de feuilles de val min trouvées
         }
         else if (cur->nbSons != 0){//Si le noeud a des fils, on ajoute chaque fils dans la file
             for (int i = 0; i < cur->nbSons; i++) {
@@ -52,36 +50,44 @@ p_node min_leaf(t_tree t) {
 }
 
 /**
- * @brief Trouve la feuille qui a le coût total min parmi les feuilles de val min.
- * @param node Nœud racine de l'arbre.
+ * @brief Trouve la feuille ayant le coût total le plus optimale du chemin pour arriver jusque lui depuis la position de MARC à partir d'un noeud
+ * @param node Nœud racine de l'arbre
+ * @return Retourne la feuille de valeur minimale et ayant le parcours le parcours le plus optimal
  */
 p_node min_leaf_node(p_node node){
-    int len = 0, cost = 0, cheaper = 10000, idx;//Stock nb feuille min, coût total de la feuille, coût élevée
+    int len = 0, cost = 0, cheaper = 10000, idx;//Stocke le nb de feuille de val min, le coût total du parcours de la feuille parcouru et le coût le moins élevé
     p_node* tab_min = tab_of_min(node, &len); //Prend toutes les feuilles de val min
 
-    for (int i = 0; i < len; i++){//Parcours toutes les feuilles pour calculer leur coût total
+    for (int i = 0; i < len; i++){  //Parcours toutes les feuilles pour calculer leur coût de parcours total
         p_node cur = tab_min[i];
-        while (cur != NULL) {
-            cost += cur->value;//Ajoute la val du noeud au coût
-            cur = cur->parent;//Remonte au noeud parent
+        while (cur != NULL) {   //Tant que cur n'est pas NULL on parcours
+            cost += cur->value; //Additionne la val du noeud au coût total de la feuille
+            cur = cur->parent;  //Remonte au noeud parent
         }
-        if (cost < cheaper){//Si le coût est inférieur au précédent
-            cheaper = cost;//MAJ du coût min
-            idx = i;//Garde l'indice de la feuille
+        if (cost < cheaper){    //Si le coût de la feuille est inférieur au coût minimum trouvé
+            cheaper = cost; //On remplace le coût minimum par le coût de la feuille
+            idx = i;    //Stocke l'indice de la feuille avec le parcours le plus optimal (moins chère)
         }
     }
-    return tab_min[idx];
+    return tab_min[idx]; //Retourne la feuille de valeur minimale et ayant le parcours le parcours le plus optimal
 }
 
-t_move* best_path(t_tree t, int *len){ //Fonction pour la recherche du meilleur chemin, càd, le coût le moins cher
-    p_node leaf = min_leaf(t);// On commence par trouver la feuille avec le coût total minimal dans l'arbre
-    int depth = leaf->depth;// Profondeur de la feuille est la longueur du chemin à partir de la racine.
-    *len = depth - 1;//Longueur du chemin - la racine
-    t_move* path = (t_move*) malloc((depth) * sizeof(t_move));//Stock les mouvements dont on a besoin en allouant un tab
+/**
+ * @brief Donne le meilleur chemin (mouvements à effectuer) pour atteindre la feuille de coût min
+ * @param t Arbre n-aires
+ * @param len Pointeur pour stocker le nb de mouvement
+ * @return Tableau de mouvement
+ */
+t_move* best_path(t_tree t, int *len){
+    p_node leaf = min_leaf(t);  // On commence par trouver la feuille avec le coût total minimal dans l'arbre
 
-    for (int i = depth - 1; i >= 0; i--){//Parcourt le chemin de la feuille jusqu'à la racine
-        path[i] = leaf->mouvement; //Stock le mouvement associé au noeud
-        leaf = leaf->parent;//On continue de remonter en passant par le parent du noeud
+    int depth = leaf->depth;    // On stocke la profondeur de la feuille de la val min
+    *len = depth - 1;   //Nombre de mouvement à effectuer (longueur du tab de mouvement retourné)
+    t_move* path = (t_move*) malloc((depth) * sizeof(t_move));  //Stock les mouvements à effectuer pour le parcours le plus optimisé
+
+    for (int i = depth - 1; i >= 0; i--){   //Parcourt le chemin de la feuille jusqu'à la racine
+        path[i] = leaf->mouvement; //Stocke le mouvement associé au noeud de la fin du tableau au début (car on part de la base et remonte à MARC avec la feuille)
+        leaf = leaf->parent;    //On continue de remonter en passant par le parent du noeud
     }
     return path;//Retourne tab des mouvements avec le meilleur chemin
 }
