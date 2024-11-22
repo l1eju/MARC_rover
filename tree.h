@@ -20,7 +20,7 @@ typedef struct s_node
 {
     int value; //coût de la val associé à ce noeud
     int depth; //profondeur de l'abre
-    t_move mouvement; // mouvement menant au noeud
+    t_move mouvement; // mouvement menant au noeud actuel
     t_soil soil_type; // type de sol
     struct s_node *parent; //pointeur vers parents
     struct s_node **sons; //pointeur tableau des fils
@@ -46,7 +46,7 @@ t_tree create_tree(int nb_poss, int depth, t_move mouvement, t_move* possibiliti
 
 int search_min(t_tree);// Cherche la valeur minimale dans l'arbre.
 
-int search_min_node(p_node node); //Cherche la valeur minimale dans un sous-arbre.
+int search_min_node(p_node node); //Cherche la valeur minimale à partir d'un noeud.
 
 int nb_min(t_node *node, int min); //Fonction bonus qui compte le nombre de nœuds ayant une valeur minimale donnée dans un sous-arbre
 
