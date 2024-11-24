@@ -53,6 +53,7 @@ t_map createTrainingMap();
  * @brief display the map with characters
  * @param map : the map to display
  */
+
 void displayMap(t_map);
 
 #endif //UNTITLED1_MAP_H
