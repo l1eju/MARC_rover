@@ -6,7 +6,7 @@ PROJET C : MARC_rover
 Lien dépôt GIT : https://github.com/l1eju/MARC_rover-li-weng-ye.git
 
 Explication du projet :
-Le projet a pour but de permettre à MARC, un rover ayant été victime d'un dysfonctionnement sur la planète MARS, de rentrer à une station base pour pouvoir le réparer.
+Le projet a pour but de permettre à MARC, un rover ayant été victime d'un dysfonctionnement sur la planète MARS, de rentrer à une station base pour pouvoir la réparer.
 Il possède encore son radar et son gyroscope pour lui permettent de se situer.
 Il se repère donc par sa position, et la direction à laquelle il fait face, parmi Nord, Sud, Est et Ouest (même sur Mars).
 N'ayant plus qu'un nombre limité de mouvement, 9 mouvements unitaire restants, MARC ne peut qu'en choisir 5 pour pouvoir rentrer chez lui.
