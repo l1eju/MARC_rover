@@ -42,7 +42,7 @@ p_node createNode(int nb_sons, int depth, t_move mouvement, t_localisation loc, 
 
 p_node create_all_Node(int nb_poss, int depth, t_move mouvement, t_move* possibilities, t_localisation robot, t_map map, p_node parent_node);//Création de tous les nœuds récursivement.
 
-t_tree create_tree(int nb_poss, int depth, t_move mouvement, t_move* possibilities, t_localisation robot, t_map map); //Création de l'arbre complet à partir des possibilités de base.
+t_tree create_tree(t_move* possibilities, t_localisation robot, t_map map); //Création de l'arbre complet à partir des possibilités de base.
 
 int search_min(t_tree);// Cherche la valeur minimale dans l'arbre.
 

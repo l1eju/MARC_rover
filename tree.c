@@ -67,9 +67,9 @@ p_node create_all_Node(int nb_poss, int depth, t_move mouvement, t_move* possibi
 }
 
 //Fonction pour la création d'un arbre basé sur les possibilités de mouvements
-t_tree create_tree(int nb_poss, int depth, t_move mouvement, t_move* possibilities, t_localisation robot, t_map map){
+t_tree create_tree(t_move* possibilities, t_localisation robot, t_map map){
     t_tree t;
-    t.root = create_all_Node(nb_poss, depth, mouvement, possibilities, robot, map, NULL);//Appel de la fonction de création des noeuds recursif
+    t.root = create_all_Node(NB_possibilities, 0, INITIAL_POS, possibilities, robot, map, NULL);//Appel de la fonction de création des noeuds recursif
     return t;
 }
 //Cherche la val min dans l'abre
