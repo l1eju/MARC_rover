@@ -9,8 +9,7 @@
 /**
  * @brief Enum for the possible soils of the map
  */
-typedef enum e_soil
-{
+typedef enum e_soil{
     BASE_STATION,
     PLAIN,
     ERG,

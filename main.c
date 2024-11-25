@@ -36,7 +36,6 @@ int main() {
 
     t_move *moves;
     moves = getRandomMoves(NB_possibilities);
-
     printf("Please enter MARC inital position \n");
     int x, y;
     do {
@@ -94,25 +93,26 @@ int main() {
     int min_val = search_min(tree);
     printf("The minimum value on which MARC can arrive is %d\n", min_val);
 
-    if (!min_val) printf("MARC can return to the base !\n");
-    else printf("Sadly, MARC can't return to the base, but he can get close to it\n");
 
-    p_node feuille_min = min_leaf(tree);    //La feuille de valeur minimale
 
     int nb_move;
     t_move *path = best_path(tree, &nb_move);
+    if (nb_move == 0) printf("MARC can't move at all ");
+    else {
+        if (!min_val) printf("MARC can return to the base !\n");
+        else printf("Sadly, MARC can't return to the base, but he can get close to it\n");
 
-    printf("The movement(s) required to arrive at the minimum value sheet is: [");
-    for (int j = 0; j <= nb_move; j++) {
-        printf("%s ", getMoveAsString(path[j]));
-        if (j < nb_move) {
-            printf("; ");
+        printf("The movement(s) required to arrive at the minimum value sheet is: [");
+        for (int j = 0; j < nb_move; j++) {
+            printf("%s ", getMoveAsString(path[j]));
+            if (j < nb_move) {
+                printf("; ");
+            }
         }
+        printf("]\n");
+
+        if (!min_val) printf("Welcome Home MARC!");
+        else printf("We hope wind will push you to the base MARC");
     }
-    printf("]\n");
-
-    if (!min_val) printf("Welcome Home MARC!");
-    else printf("We hope wind will push you to the base MARC");
-
     return 0;
 }

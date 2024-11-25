@@ -52,9 +52,10 @@ p_node create_all_Node(int nb_poss, int depth, t_move mouvement, t_move* possibi
 
     for (int i = 0; i < nb_poss; i++) {
         t_localisation new_loc = robot;
-        updateLocalisation(&new_loc, possibilities[i]); //On stocke la nouvelle position du robot selon le mouvement associé dans new_loc
 
+        updateLocalisation(&new_loc, possibilities[i]); //On stocke la nouvelle position du robot selon le mouvement associé dans new_loc
         if (isValidLocalisation(new_loc.pos, map.x_max, map.y_max)) { //Si la position après le mouvement est valide, on crée les enfants
+
             t_move* new_possibilities = remove_move(possibilities, nb_poss, i);                  //On crée le nouveau tableau de possibilités en retirant la case du noeud qu'on va créer car on l'aura déjà utilisé et on a déjà stocker la position après le mouvement pour connaître le coût
             node->sons[i] = create_all_Node(nb_poss - 1, depth+1, possibilities[i], new_possibilities, new_loc, map, node); //On utilise la récursivité pour obtenir l'enfant avec les nouveaux paramètres
             free(new_possibilities);   //On libère la mémoire de new_possibilities

@@ -7,6 +7,7 @@
 
 #include "loc.h"
 #include <time.h>
+#include "map.h"
 
 /**
  * @brief Array of strings for the possible moves of the robot
