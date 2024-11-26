@@ -21,7 +21,7 @@ TREE :
  Création d'un noeud
  Construction d'un arbre n-aires
  Recherche de la valeur minimale de tout l'arbre
- Complexité phase de construction de l'arbre : O((n!)^2)
+ Complexité phase de construction de l'arbre : O((n!)²)
  
 NODE_QUEUE :
 Fonction de file pour les noeuds
@@ -36,7 +36,7 @@ Recherche de la feuille de valeur minimale
  Choix du noeud ayant le coût optimal
 Définition du chemin optimal
  Définir les mouvements à effectuer pour avoir le parcours le plus optimal
- Complexité phase de recherche d'une feuille de valeur minimale parmi toutes les feuilles de l'arbre : O((n!)^2)
+ Complexité phase de recherche d'une feuille de valeur minimale parmi toutes les feuilles de l'arbre : O((n!)²)
  Complexité du calcul du chemin de la racine vers cette feuille : O(n)
 Merci !
 
