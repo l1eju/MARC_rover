@@ -5,12 +5,13 @@
 #ifndef UNTITLED1_MAP_H
 #define UNTITLED1_MAP_H
 
+#include "loc.h"
+
 #define COST_UNDEF 65535
 /**
  * @brief Enum for the possible soils of the map
  */
-typedef enum e_soil
-{
+typedef enum e_soil{
     BASE_STATION,
     PLAIN,
     ERG,
@@ -34,6 +35,9 @@ typedef struct s_map
     int     x_max;
     int     y_max;
 } t_map;
+
+t_position getBaseStationPosition(t_map);
+
 
 /**
  * @brief Function to initialise the map from a file
